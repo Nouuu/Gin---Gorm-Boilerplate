@@ -2,20 +2,19 @@ package initializers
 
 import (
 	"fmt"
+	"github.com/nouuu/gorm-gin-boilerplate/repositories"
 	"github.com/nouuu/gorm-gin-boilerplate/repositories/entities"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
 func connectToDatabase() error {
 	uri := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		Env.DbHost,
-		Env.DbUsername,
-		Env.DbPassword,
-		Env.DbName,
-		Env.DbPort,
+		envConf.DbHost,
+		envConf.DbUsername,
+		envConf.DbPassword,
+		envConf.DbName,
+		envConf.DbPort,
 	)
 
 	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
@@ -23,18 +22,18 @@ func connectToDatabase() error {
 	if err != nil {
 		return err
 	}
-	DB = db
+	repositories.InitDB(db)
 
-	if Env.DbSync {
+	if envConf.DbSync {
 		// Comme c'est le dernier appel, on peut retourner directement le résultat de la fonction
-		return autoMigrate()
+		return autoMigrate(db)
 	}
 
 	return nil
 }
 
-func autoMigrate() error {
-	err := DB.AutoMigrate(&entities.BookEntity{})
+func autoMigrate(db *gorm.DB) error {
+	err := db.AutoMigrate(&entities.BookEntity{})
 	if err != nil {
 		return err
 	}

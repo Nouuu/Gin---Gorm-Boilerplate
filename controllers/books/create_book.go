@@ -1,14 +1,16 @@
 package books
 
-import "github.com/nouuu/gorm-gin-boilerplate/models"
+import (
+	"github.com/nouuu/gorm-gin-boilerplate/usecases/models"
+)
 
-type CreateBookRequest struct {
+type createBookRequest struct {
 	Title  string `json:"title" binding:"required"`
 	Author string `json:"author" binding:"required"`
 	Pages  uint   `json:"pages" binding:"required"`
 }
 
-func (createBookRequest *CreateBookRequest) ToBook() models.Book {
+func (createBookRequest *createBookRequest) ToBook() models.Book {
 	return models.Book{
 		Title:  createBookRequest.Title,
 		Author: createBookRequest.Author,

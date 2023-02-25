@@ -16,7 +16,7 @@ type EnvironmentConf struct {
 	DbSync     bool   `env:"DB_SYNC" envDefault:"true"`
 }
 
-var Env *EnvironmentConf
+var envConf *EnvironmentConf
 
 func loadEnvVariables() error {
 	var envCfg = &EnvironmentConf{}
@@ -30,6 +30,6 @@ func loadEnvVariables() error {
 		return err
 	}
 
-	Env = envCfg
+	envConf = envCfg
 	return nil
 }

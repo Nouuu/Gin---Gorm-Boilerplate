@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"github.com/nouuu/gorm-gin-boilerplate/models"
+	"github.com/nouuu/gorm-gin-boilerplate/usecases/models"
 	"gorm.io/gorm"
 )
 

@@ -1,47 +1,47 @@
-package repository
+package repositories
 
 import (
-	"github.com/nouuu/gorm-gin-boilerplate/initializers"
-	"github.com/nouuu/gorm-gin-boilerplate/models"
 	"github.com/nouuu/gorm-gin-boilerplate/repositories/entities"
+	"github.com/nouuu/gorm-gin-boilerplate/usecases/models"
+	"github.com/nouuu/gorm-gin-boilerplate/utils/optional"
 )
 
 func GetBooks() []models.Book {
 	var bookEntities []entities.BookEntity
-	initializers.DB.Find(&bookEntities)
+	db.Find(&bookEntities)
 
 	return entities.BookEntitiesToBooks(bookEntities)
 }
 
-func GetBook(id uint) (models.Book, error) {
+func GetBook(id uint) (optional.Optional[models.Book], error) {
 	var bookEntity entities.BookEntity
-	err := initializers.DB.First(&bookEntity, id).Error
+	err := db.First(&bookEntity, id).Error
 	if err != nil {
-		return models.Book{}, err
+		return optional.Empty[models.Book](), err
 	}
-	return entities.ToBook(bookEntity), nil
+	return optional.Of[models.Book](entities.ToBook(bookEntity)), nil
 }
 
-func CreateBook(book models.Book) (models.Book, error) {
+func CreateBook(book models.Book) (optional.Optional[models.Book], error) {
 	bookEntity := entities.FromBook(book)
-	err := initializers.DB.Create(&bookEntity).Error
+	err := db.Create(&bookEntity).Error
 	if err != nil {
-		return models.Book{}, err
+		return optional.Empty[models.Book](), err
 	}
-	return entities.ToBook(bookEntity), nil
+	return optional.Of[models.Book](entities.ToBook(bookEntity)), nil
 }
 
-func UpdateBook(book models.Book) (models.Book, error) {
+func UpdateBook(book models.Book) (optional.Optional[models.Book], error) {
 	bookEntity := entities.FromBook(book)
-	err := initializers.DB.Model(&bookEntity).Where("id = ?", book.ID).Updates(bookEntity).Error
+	err := db.Model(&bookEntity).Where("id = ?", book.ID).Updates(bookEntity).Error
 	if err != nil {
-		return models.Book{}, err
+		return optional.Empty[models.Book](), err
 	}
-	return entities.ToBook(bookEntity), nil
+	return optional.Of[models.Book](entities.ToBook(bookEntity)), nil
 }
 
 func DeleteBook(id uint) error {
-	err := initializers.DB.Delete(&entities.BookEntity{}, id).Error
+	err := db.Delete(&entities.BookEntity{}, id).Error
 	if err != nil {
 		return err
 	}

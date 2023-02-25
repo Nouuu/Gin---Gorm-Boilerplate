@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nouuu/gorm-gin-boilerplate/controllers/utils"
 	repository "github.com/nouuu/gorm-gin-boilerplate/repositories"
+	"github.com/nouuu/gorm-gin-boilerplate/usecases"
 	"net/http"
 	"strconv"
 )
@@ -19,7 +20,7 @@ func InitBookController(r *gin.Engine) {
 
 func getBooks(c *gin.Context) {
 	books := repository.GetBooks()
-	c.JSON(http.StatusOK, books)
+	c.JSON(http.StatusOK, booksToBookResponses(books))
 }
 
 func getBook(c *gin.Context) {
@@ -28,30 +29,38 @@ func getBook(c *gin.Context) {
 		utils.HandleError(c, http.StatusBadRequest, err)
 		return
 	}
-	book, err := repository.GetBook(uint(id))
+	optionalBook, err := usecases.GetBook(uint(id))
 	if err != nil {
 		utils.HandleError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, book)
+	if optionalBook.IsEmpty() {
+		utils.HandleError(c, http.StatusNotFound, nil)
+		return
+	}
+	c.JSON(http.StatusOK, toBookResponse(optionalBook.Get()))
 }
 
 func addBook(c *gin.Context) {
-	var createBookRequest CreateBookRequest
+	var createBookRequest createBookRequest
 	if err := c.ShouldBindJSON(&createBookRequest); err != nil {
 		utils.HandleError(c, http.StatusBadRequest, err)
 		return
 	}
-	book, err := repository.CreateBook(createBookRequest.ToBook())
+	optionalBook, err := usecases.CreateBook(createBookRequest.ToBook())
 	if err != nil {
 		utils.HandleError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, book)
+	if optionalBook.IsEmpty() {
+		utils.HandleError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, toBookResponse(optionalBook.Get()))
 }
 
 func updateBook(c *gin.Context) {
-	var updateBookRequest UpdateBookRequest
+	var updateBookRequest updateBookRequest
 	if err := c.ShouldBindJSON(&updateBookRequest); err != nil {
 		utils.HandleError(c, http.StatusBadRequest, err)
 		return
@@ -61,12 +70,16 @@ func updateBook(c *gin.Context) {
 		utils.HandleError(c, http.StatusBadRequest, err)
 		return
 	}
-	book, err := repository.UpdateBook(updateBookRequest.ToBook(uint(id)))
+	optionalBook, err := usecases.UpdateBook(updateBookRequest.ToBook(uint(id)))
 	if err != nil {
 		utils.HandleError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, book)
+	if optionalBook.IsEmpty() {
+		utils.HandleError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, toBookResponse(optionalBook.Get()))
 }
 
 func deleteBook(c *gin.Context) {
@@ -75,7 +88,7 @@ func deleteBook(c *gin.Context) {
 		utils.HandleError(c, http.StatusBadRequest, err)
 		return
 	}
-	err = repository.DeleteBook(uint(id))
+	err = usecases.DeleteBook(uint(id))
 	if err != nil {
 		utils.HandleError(c, http.StatusInternalServerError, err)
 		return
