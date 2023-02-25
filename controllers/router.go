@@ -6,5 +6,5 @@ import (
 )
 
 func InitRouter(r *gin.Engine) {
-	books.Init(r)
+	books.InitBookController(r)
 }

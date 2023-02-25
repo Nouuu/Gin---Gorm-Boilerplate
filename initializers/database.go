@@ -2,7 +2,7 @@ package initializers
 
 import (
 	"fmt"
-	"github.com/nouuu/gorm-gin-boilerplate/repositories/migrations"
+	"github.com/nouuu/gorm-gin-boilerplate/repositories/entities"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -27,8 +27,16 @@ func connectToDatabase() error {
 
 	if Env.DbSync {
 		// Comme c'est le dernier appel, on peut retourner directement le résultat de la fonction
-		return migrations.AutoMigrate(db)
+		return autoMigrate()
 	}
 
+	return nil
+}
+
+func autoMigrate() error {
+	err := DB.AutoMigrate(&entities.BookEntity{})
+	if err != nil {
+		return err
+	}
 	return nil
 }

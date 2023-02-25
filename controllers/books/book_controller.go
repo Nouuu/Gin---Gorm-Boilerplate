@@ -2,91 +2,83 @@ package books
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/nouuu/gorm-gin-boilerplate/controllers/utils"
 	repository "github.com/nouuu/gorm-gin-boilerplate/repositories"
+	"net/http"
 	"strconv"
 )
 
-func Init(r *gin.Engine) {
+func InitBookController(r *gin.Engine) {
 	routerGroup := r.Group("/books")
-	getBooks(routerGroup)
-	getBook(routerGroup)
-	addBook(routerGroup)
-	updateBook(routerGroup)
-	deleteBook(routerGroup)
+	routerGroup.GET("", getBooks)
+	routerGroup.GET("/:id", getBook)
+	routerGroup.POST("", addBook)
+	routerGroup.PUT("/:id", updateBook)
+	routerGroup.DELETE("/:id", deleteBook)
 }
 
-func getBooks(r *gin.RouterGroup) {
-	r.GET("", func(c *gin.Context) {
-		books := repository.GetBooks()
-		c.JSON(200, books)
-	})
+func getBooks(c *gin.Context) {
+	books := repository.GetBooks()
+	c.JSON(http.StatusOK, books)
 }
 
-func getBook(r *gin.RouterGroup) {
-	r.GET("/:id", func(c *gin.Context) {
-		id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-		if err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-		book, err := repository.GetBook(uint(id))
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, book)
-	})
+func getBook(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		utils.HandleError(c, http.StatusBadRequest, err)
+		return
+	}
+	book, err := repository.GetBook(uint(id))
+	if err != nil {
+		utils.HandleError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, book)
 }
 
-func addBook(r *gin.RouterGroup) {
-	r.POST("", func(c *gin.Context) {
-		var createBook CreateBookRequest
-		if err := c.ShouldBindJSON(&createBook); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-		book, err := repository.CreateBook(createBook.ToBook())
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, book)
-	})
+func addBook(c *gin.Context) {
+	var createBookRequest CreateBookRequest
+	if err := c.ShouldBindJSON(&createBookRequest); err != nil {
+		utils.HandleError(c, http.StatusBadRequest, err)
+		return
+	}
+	book, err := repository.CreateBook(createBookRequest.ToBook())
+	if err != nil {
+		utils.HandleError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, book)
 }
 
-func updateBook(r *gin.RouterGroup) {
-	r.PUT("/:id", func(c *gin.Context) {
-		var updateBook UpdateBookRequest
-		if err := c.ShouldBindJSON(&updateBook); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-		id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-		if err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-		book, err := repository.UpdateBook(updateBook.ToBook(uint(id)))
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, book)
-	})
+func updateBook(c *gin.Context) {
+	var updateBookRequest UpdateBookRequest
+	if err := c.ShouldBindJSON(&updateBookRequest); err != nil {
+		utils.HandleError(c, http.StatusBadRequest, err)
+		return
+	}
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		utils.HandleError(c, http.StatusBadRequest, err)
+		return
+	}
+	book, err := repository.UpdateBook(updateBookRequest.ToBook(uint(id)))
+	if err != nil {
+		utils.HandleError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, book)
 }
 
-func deleteBook(r *gin.RouterGroup) {
-	r.DELETE("/:id", func(c *gin.Context) {
-		id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-		if err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-		err = repository.DeleteBook(uint(id))
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, gin.H{"message": "Book deleted"})
-	})
+func deleteBook(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		utils.HandleError(c, http.StatusBadRequest, err)
+		return
+	}
+	err = repository.DeleteBook(uint(id))
+	if err != nil {
+		utils.HandleError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Book deleted"})
 }
