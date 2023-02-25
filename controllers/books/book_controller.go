@@ -3,7 +3,6 @@ package books
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/nouuu/gorm-gin-boilerplate/controllers/utils"
-	repository "github.com/nouuu/gorm-gin-boilerplate/repositories"
 	"github.com/nouuu/gorm-gin-boilerplate/usecases"
 	"net/http"
 	"strconv"
@@ -19,7 +18,7 @@ func InitBookController(r *gin.Engine) {
 }
 
 func getBooks(c *gin.Context) {
-	books := repository.GetBooks()
+	books := usecases.GetBooks()
 	c.JSON(http.StatusOK, booksToBookResponses(books))
 }
 

@@ -18,10 +18,12 @@ func (BookEntity) TableName() string {
 
 func ToBook(bookEntity BookEntity) models.Book {
 	return models.Book{
-		ID:     bookEntity.ID,
-		Title:  bookEntity.Title,
-		Author: bookEntity.Author,
-		Pages:  bookEntity.Pages,
+		ID:        bookEntity.ID,
+		Title:     bookEntity.Title,
+		Author:    bookEntity.Author,
+		Pages:     bookEntity.Pages,
+		CreatedAt: bookEntity.CreatedAt,
+		UpdatedAt: bookEntity.UpdatedAt,
 	}
 }
 
