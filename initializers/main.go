@@ -1,15 +1,19 @@
 package initializers
 
-import "log"
+import (
+	"github.com/nouuu/gorm-gin-boilerplate/logs"
+	"log"
+)
 
 func Init() {
 	err := loadEnvVariables()
 	if err != nil {
 		log.Fatal(err)
 	}
+	initLogger()
 	err = connectToDatabase()
 	if err != nil {
-		log.Fatal(err)
+		logs.ErrorLogger.Fatal(err)
 	}
 	initGinEngine()
 }
