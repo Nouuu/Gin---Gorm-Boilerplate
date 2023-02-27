@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/nouuu/gorm-gin-boilerplate/controllers"
-	"github.com/nouuu/gorm-gin-boilerplate/logs"
+	"github.com/nouuu/gorm-gin-boilerplate/logger"
 	"io"
 	"log"
 	"os"
@@ -57,10 +57,10 @@ func setLogger() {
 
 func RunServer() {
 	if ginEngine == nil {
-		logs.ErrorLogger.Fatal("Gin engine is not initialized")
+		logger.ErrorLogger.Fatal("Gin engine is not initialized")
 	}
 	err := ginEngine.Run(strings.Join([]string{":", envConf.Port}, ""))
 	if err != nil {
-		logs.ErrorLogger.Fatal(err)
+		logger.ErrorLogger.Fatal(err)
 	}
 }

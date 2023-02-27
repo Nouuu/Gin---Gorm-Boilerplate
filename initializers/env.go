@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-type EnvironmentConf struct {
+type environmentConf struct {
 	Port        string `env:"PORT" envDefault:"8080"`
 	DbHost      string `env:"DB_HOST" envDefault:"localhost"`
 	DbPort      string `env:"DB_PORT" envDefault:"5432"`
@@ -19,10 +19,10 @@ type EnvironmentConf struct {
 	LogFile     string `env:"LOG_FILE" envDefault:"gin.log"`
 }
 
-var envConf *EnvironmentConf
+var envConf *environmentConf
 
 func loadEnvVariables() error {
-	var envCfg = &EnvironmentConf{}
+	var envCfg = &environmentConf{}
 
 	err := godotenv.Load(".env")
 	if err != nil && !os.IsNotExist(err) {
