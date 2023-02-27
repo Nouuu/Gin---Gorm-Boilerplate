@@ -1,0 +1,25 @@
+direction: down
+
+get_book_by_id: Get Book by ID {
+    shape: sequence_diagram
+    
+    client: Client
+    controller: Controller
+    usecase: UseCase
+    repository: Repository
+    logger: Logger
+
+    client.get_book_by_id -> controller.get_book_by_id: Send GET request on /books/:id
+    controller.get_book_by_id -> controller.get_book_by_id: Map request id
+    controller.get_book_by_id -> usecase.get_book_by_id: Call usecases.GetBook(:id)
+    usecase.get_book_by_id -> logger: Log (debug) the request call
+    usecase.get_book_by_id -> repository.get_book_by_id: Call repository.GetBook(:id)
+    repository.get_book_by_id -> repository.get_book_by_id: Get book entity\nfrom database
+    repository.get_book_by_id -> repository.get_book_by_id: Map entities to DTO
+    repository.get_book_by_id -> repository.get_book_by_id: Wrap DTO in Optional
+    repository.get_book_by_id -> usecase.get_book_by_id: Return Optional DTO
+    usecase.get_book_by_id -> controller.get_book_by_id: Return Optional DTO
+    controller.get_book_by_id -> controller.get_book_by_id: Check if DTO is present
+    controller.get_book_by_id -> controller.get_book_by_id: Map DTO\nto JSON response
+    controller.get_book_by_id -> client.get_book_by_id: Return JSON response
+}

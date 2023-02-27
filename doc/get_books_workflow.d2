@@ -1,0 +1,22 @@
+direction: down
+
+get_all_books: Get All Books {
+    shape: sequence_diagram
+    
+    client: Client
+    controller: Controller
+    usecase: UseCase
+    repository: Repository
+    logger: Logger
+
+    client.get_all_books -> controller.get_all_books: Send GET request on /books
+    controller.get_all_books -> usecase.get_all_books: Call usecases.GetBooks()
+    usecase.get_all_books -> logger: Log (debug) the request call
+    usecase.get_all_books -> repository.get_all_books: Call repository.GetBooks()
+    repository.get_all_books -> repository.get_all_books: Get all books entities\nfrom database
+    repository.get_all_books -> repository.get_all_books: Map entities to DTOs
+    repository.get_all_books -> usecase.get_all_books: Return DTOs
+    usecase.get_all_books -> controller.get_all_books: Return DTOs
+    controller.get_all_books -> controller.get_all_books: Map DTOs\nto JSON response
+    controller.get_all_books -> client.get_all_books: Return JSON response
+}

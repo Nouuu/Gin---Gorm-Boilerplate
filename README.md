@@ -273,6 +273,66 @@ When init the gin engine, we set various options :
 - Set the recovery middleware
 - Set the routes
 
+[initializers/gin.go](initializers/gin.go)
+```go
+var ginEngine *gin.Engine
+
+func initGinEngine() {
+	setGinMode()
+	ginEngine = gin.New()
+	ginEngine.Use(gin.Recovery())
+	setLogger()
+	controllers.InitRouter(ginEngine)
+}
+
+func setGinMode() {
+	if envConf.ReleaseMode {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
+	}
+}
+
+func setLogger() {
+	f, err := os.OpenFile(envConf.LogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+	ginEngine.Use(
+		gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+			if param.StatusCode < 400 && envConf.ReleaseMode {
+				return ""
+			}
+			return fmt.Sprintf("[%s][GIN] %s - \"%s %s %s %d %s \"%s\" %s\"\n",
+				param.TimeStamp.Format(time.RFC3339),
+				param.ClientIP,
+				param.Method,
+				param.Path,
+				param.Request.Proto,
+				param.StatusCode,
+				param.Latency,
+				param.Request.UserAgent(),
+				param.ErrorMessage,
+			)
+		}))
+}
+```
+
+The log format is set as the same as the loggers.
+
+## Workflows
+
+Here are some use cases workflows.
+
+### Get Books
+
+![Get Books](doc/get_books_workflow.png)
+
+### Get Book
+
+![Get Book](doc/get_book_by_id_workflow.png)
+
 
 ## License
 
