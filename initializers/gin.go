@@ -57,10 +57,10 @@ func setLogger() {
 
 func RunServer() {
 	if ginEngine == nil {
-		logger.ErrorLogger.Fatal("Gin engine is not initialized")
+		logger.Fatal("Gin engine is not initialized")
 	}
 	err := ginEngine.Run(strings.Join([]string{":", envConf.Port}, ""))
 	if err != nil {
-		logger.ErrorLogger.Fatal(err)
+		logger.Fatal(err)
 	}
 }

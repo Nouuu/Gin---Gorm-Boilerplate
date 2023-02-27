@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	WarningLogger *log.Logger
-	InfoLogger    *log.Logger
-	DebugLogger   *log.Logger
-	ErrorLogger   *log.Logger
+	warningLogger *log.Logger
+	infoLogger    *log.Logger
+	debugLogger   *log.Logger
+	errorLogger   *log.Logger
 )
 
 type logWriter struct {
@@ -29,80 +29,80 @@ func (writer logWriter) Write(bytes []byte) (int, error) {
 }
 
 func InitLoggers(output io.Writer, info, warn, debug bool) {
-	WarningLogger = log.New(logWriter{writer: output, enable: warn, level: "WARN"}, "", 0)
-	InfoLogger = log.New(logWriter{writer: output, enable: info, level: "INFO"}, "", 0)
-	DebugLogger = log.New(logWriter{writer: output, enable: debug, level: "DEBUG"}, "", log.Lshortfile)
-	ErrorLogger = log.New(logWriter{writer: output, enable: true, level: "ERROR"}, "", log.Lshortfile)
+	warningLogger = log.New(logWriter{writer: output, enable: warn, level: "WARN"}, "", 0)
+	infoLogger = log.New(logWriter{writer: output, enable: info, level: "INFO"}, "", 0)
+	debugLogger = log.New(logWriter{writer: output, enable: debug, level: "DEBUG"}, "", log.Lshortfile)
+	errorLogger = log.New(logWriter{writer: output, enable: true, level: "ERROR"}, "", log.Lshortfile)
 }
 
 func InfoPrint(v ...any) {
-	InfoLogger.Print(v...)
+	infoLogger.Print(v...)
 }
 
 func InfoPrintf(format string, v ...any) {
-	InfoLogger.Printf(format, v...)
+	infoLogger.Printf(format, v...)
 }
 
 func InfoPrintln(v ...any) {
-	InfoLogger.Println(v...)
+	infoLogger.Println(v...)
 }
 
 func WarnPrint(v ...any) {
-	WarningLogger.Print(v...)
+	warningLogger.Print(v...)
 }
 
 func WarnPrintf(format string, v ...any) {
-	WarningLogger.Printf(format, v...)
+	warningLogger.Printf(format, v...)
 }
 
 func WarnPrintln(v ...any) {
-	WarningLogger.Println(v...)
+	warningLogger.Println(v...)
 }
 
 func DebugPrint(v ...any) {
-	DebugLogger.Print(v...)
+	debugLogger.Print(v...)
 }
 
 func DebugPrintf(format string, v ...any) {
-	DebugLogger.Printf(format, v...)
+	debugLogger.Printf(format, v...)
 }
 
 func DebugPrintln(v ...any) {
-	DebugLogger.Println(v...)
+	debugLogger.Println(v...)
 }
 
 func ErrorPrint(v ...any) {
-	ErrorLogger.Print(v...)
+	errorLogger.Print(v...)
 }
 
 func ErrorPrintf(format string, v ...any) {
-	ErrorLogger.Printf(format, v...)
+	errorLogger.Printf(format, v...)
 }
 
 func ErrorPrintln(v ...any) {
-	ErrorLogger.Println(v...)
+	errorLogger.Println(v...)
 }
 
 func Fatal(v ...any) {
-	ErrorLogger.Fatal(v...)
+	errorLogger.Fatal(v...)
 }
 
 func Fatalf(format string, v ...any) {
-	ErrorLogger.Fatalf(format, v...)
+	errorLogger.Fatalf(format, v...)
 }
 
 func Fatalln(v ...any) {
-	ErrorLogger.Fatalln(v...)
+	errorLogger.Fatalln(v...)
 }
 
 func Panic(v ...any) {
-	ErrorLogger.Panic(v...)
+	errorLogger.Panic(v...)
 }
 
 func Panicf(format string, v ...any) {
-	ErrorLogger.Panicf(format, v...)
+	errorLogger.Panicf(format, v...)
 }
 
 func Panicln(v ...any) {
-	ErrorLogger.Panicln(v...)
+	errorLogger.Panicln(v...)
 }

@@ -1,6 +1,7 @@
 package initializers
 
 import (
+	"github.com/nouuu/gorm-gin-boilerplate/logger"
 	"io"
 	"os"
 )
