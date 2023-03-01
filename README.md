@@ -1,4 +1,4 @@
-# Gorm Gin boilerplate
+# Gin Gorm boilerplate
 
 ## Description
 
